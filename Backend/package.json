@@ -4,6 +4,7 @@
     "express": "^4.18.2",
     "express-jwt": "^8.4.1",
     "firebase": "^10.7.0",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "react-router-dom": "^6.20.1"
   }
 }

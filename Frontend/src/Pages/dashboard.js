@@ -4,7 +4,7 @@ import { useAddBudget } from "../hooks/useAddBudget";
 import { useGetBudgets } from "../hooks/useGetBudgets";
 import { useAddTransaction } from "../hooks/useAddTransaction";
 import { useGetTransactions } from "../hooks/useGetTransaction";
-// import { useGetUserInfo } from "../hooks/useGetUserInfo";
+import { useGetUserInfo } from "../hooks/useGetUserInfo";
 
 const Dashboard = () => {
 
@@ -13,6 +13,7 @@ const Dashboard = () => {
     const { addTransaction } = useAddTransaction()
     const { transactions } = useGetTransactions()
     const navigate = useNavigate()
+    const { username } = useGetUserInfo()
 
     const [budgetDescription, setBudgetDescription] = useState("none")
     const [budgetAmount, setBudgetAmount] = useState(0)
@@ -21,6 +22,8 @@ const Dashboard = () => {
     const [transBudget, setTransBudget] = useState('none')
 
     const onSubmitBudgets = async (e) => {
+        document.getElementById('budget-description').value = ''
+        document.getElementById('budget-amount').value = ''
         e.preventDefault()
         addBudget({
             description: budgetDescription,
@@ -35,12 +38,13 @@ const Dashboard = () => {
             amount: transAmount,
             budget: transBudget
         })
+        document.getElementById('trans-description').value = ''
     }
 
     // need to fully implement
     const signOut = async () => {
         try{
-            console.log("need to implement log out")
+            console.log("need to implement log out....maybe...it might be implemented")
             localStorage.clear()
             navigate("/")
         }catch(error){
@@ -52,7 +56,7 @@ const Dashboard = () => {
     <>
         <div className="expense-tracker">
             <div className="container">
-                <h1>MJ's Dashboard</h1>
+                <h1>{ username }'s Dashboard</h1>
                 <button className="sign-out-button" onClick={signOut}>Sign Out</button>
                 <div className="balance">
                     <h3>Your Balance</h3>
@@ -70,26 +74,39 @@ const Dashboard = () => {
                 </div>
                 <h2>Add Budget</h2>
                 <form onSubmit={ onSubmitBudgets }>
-                    <input type="text" placeholder="Name" required onChange={(e) => setBudgetDescription(e.target.value)} />
-                    <input type="number" placeholder="Amount" required onChange={(e) => setBudgetAmount(e.target.value)} />
+                    <input 
+                        type="text" 
+                        placeholder="Name" 
+                        required 
+                        id="budget-description"
+                        onChange={(e) => setBudgetDescription(e.target.value)} />
+                    <input 
+                        type="number" 
+                        placeholder="Amount" 
+                        required 
+                        id="budget-amount"
+                        onChange={(e) => setBudgetAmount(e.target.value)} />
                     
                     <button type="submit">Add Budget</button>
                 </form>
+
                 <h2>Add Transaction</h2>
                 <form onSubmit={ onSubmitTrans }>
                     <input 
                         type="text" 
                         placeholder="Description" 
                         required 
+                        id="trans-description"
                         onChange={(e) => setTransDescription(e.target.value)} 
                         />
                     <input 
                         type="number" 
                         placeholder="Amount" 
                         required 
+                        id="trans-amount"
                         onChange={(e) => setTransAmount(e.target.value)} 
                         />
-                    <select id="budgets" required onChange={(e)=> setTransBudget(e.target.value)}>
+                    <select id="trans-budgets" required onChange={(e)=> setTransBudget(e.target.value)}>
                         <option value="Income">Income</option>
                         <option value="No budget">No Budget</option>
                         {budgets.map((budget) => {
@@ -110,7 +127,7 @@ const Dashboard = () => {
                 {transactions.map((transaction) => {
                     const {description, amount, budget} = transaction
                     return (
-                        <p>{description}: ${amount} for <label style={{color: budget === 'income' ? "green" : "red"}}>{budget}</label></p>
+                        <p>{description}: ${amount} for <label style={{color: budget === 'Income' ? "green" : "red"}}>{budget}</label></p>
                     )
                 })}
             </ul>

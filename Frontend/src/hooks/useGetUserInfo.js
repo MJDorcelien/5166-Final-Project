@@ -1,5 +1,5 @@
-// export const useGetUserInfo = () => {
-//     const results = JSON.parse(localStorage.getItem("jwt"))
+export const useGetUserInfo = () => {
+    const { username, password, userID} = JSON.parse(localStorage.getItem("auth"))
 
-//     return results
-// }
+    return { username, password, userID }
+}

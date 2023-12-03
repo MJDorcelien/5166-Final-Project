@@ -1,20 +1,20 @@
 import { collection, onSnapshot, orderBy, query, where } from "firebase/firestore"
 import { useEffect, useState } from "react"
 import { db } from "../config/firebase-config"
+import { useGetUserInfo } from "./useGetUserInfo"
 
 export const useGetBudgets = () => {
 
     const [budgets, setBudgets] = useState([])
     const budgetsCoRef = collection(db, "budgets")
-    // need to change how to get the user id when jwt starts working
-    const userId = 1
+    const { userID } = useGetUserInfo()
 
     const getBudgets = async () => {
         let unsubscribe
         try {
             const queryBudgets = query( 
                 budgetsCoRef, 
-                where("userID", "==", userId), 
+                where("userID", "==", userID), 
                 orderBy("createdAt"))
 
             unsubscribe = onSnapshot(queryBudgets, (snapshot) => {

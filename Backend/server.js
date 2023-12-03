@@ -1,6 +1,3 @@
-// import { db } from '../Frontend/src/config/firebase-config';
-// import {collection, query, where} from 'firebase/firestore'
-
 const express = require('express');
 const app = express();
 
@@ -26,7 +23,9 @@ const jwtMW = exjwt({
     algorithms: ['HS256']
 });
 
-let users = [
+// figure out a way to get the database of users
+
+let usersOld = [
     {
         id: 1,
         username: 'mj',
@@ -41,10 +40,10 @@ let users = [
 
 
 
-app.post('/api/login', (req, res) => {
+app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
    
-    for (let user of users){
+    for (let user of usersOld){
         if (username ==user.username && password == user.password) {
             let token = jwt.sign({id: user.id, username: user.username}, secretKey, { expiresIn: '180000' })
             console.log(user.id)
@@ -66,6 +65,26 @@ app.post('/api/login', (req, res) => {
         }
     }
 });
+
+app.post('/api/signup', (req, res) => {
+    const { username, password, userID } = req.body
+
+    if (req.body){
+        let token = jwt.sign({id: userID, username: username}, secretKey, { expiresIn: '180000'})
+        res.json({
+            success: true,
+            err: null,
+            token
+        })
+    }
+    else {
+        res.status(401).json({
+            success: false,
+            token: null,
+            err: 'SignUp Failed'
+        })
+    }    
+})
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '/'));
