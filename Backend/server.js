@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require('express')
 const app = express();
 
 const jwt = require('jsonwebtoken');
@@ -23,49 +23,6 @@ const jwtMW = exjwt({
     algorithms: ['HS256']
 });
 
-// figure out a way to get the database of users
-
-let usersOld = [
-    {
-        id: 1,
-        username: 'mj',
-        password: '123'
-    },
-    {
-        id: 2,
-        username: 'dorcelien',
-        password: '456'
-    }
-];
-
-
-
-app.post('/api/login', async (req, res) => {
-    const { username, password } = req.body;
-   
-    for (let user of usersOld){
-        if (username ==user.username && password == user.password) {
-            let token = jwt.sign({id: user.id, username: user.username}, secretKey, { expiresIn: '180000' })
-            console.log(user.id)
-            console.log(user.username)
-            res.json({
-                success: true,
-                err: null,
-                token
-            });
-
-            break;
-        }
-        else{
-            res.status(401).json({
-                success: false,
-                token: null,
-                err: 'Username or password is incorrect'
-            });
-        }
-    }
-});
-
 app.post('/api/signup', (req, res) => {
     const { username, password, userID } = req.body
 
@@ -84,6 +41,26 @@ app.post('/api/signup', (req, res) => {
             err: 'SignUp Failed'
         })
     }    
+})
+
+app.post('/api/login', (req, res) => {
+    const { username, password, userID } = req.body
+
+    if (req.body){
+        let token = jwt.sign({id: userID, username: username}, secretKey, { expiresIn: '180000'})
+        res.json({
+            success: true,
+            err: null,
+            token
+        })
+    }
+    else {
+        res.status(401).json({
+            success: false,
+            token: null,
+            err: 'LogIn Failed'
+        })
+    } 
 })
 
 app.get('/', (req, res) => {

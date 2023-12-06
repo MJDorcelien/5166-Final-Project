@@ -5,6 +5,7 @@ import { useGetBudgets } from "../hooks/useGetBudgets";
 import { useAddTransaction } from "../hooks/useAddTransaction";
 import { useGetTransactions } from "../hooks/useGetTransaction";
 import { useGetUserInfo } from "../hooks/useGetUserInfo";
+import PieChart from "../components/piechart";
 
 const Dashboard = () => {
 
@@ -41,10 +42,8 @@ const Dashboard = () => {
         document.getElementById('trans-description').value = ''
     }
 
-    // need to fully implement
     const signOut = async () => {
         try{
-            console.log("need to implement log out....maybe...it might be implemented")
             localStorage.clear()
             navigate("/")
         }catch(error){
@@ -131,6 +130,10 @@ const Dashboard = () => {
                     )
                 })}
             </ul>
+        </div>
+        <div>
+            <h2>Transactions PieChart</h2>
+            <p><PieChart/></p>
         </div>
     </>
   );

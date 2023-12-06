@@ -1,16 +1,29 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getAuth, GoogleAuthProvider } from "firebase/auth"
-import { getFirestore } from "firebase/firestore"
+// import { initializeApp } from "firebase/app";
+// import { getAnalytics } from "firebase/analytics";
+// import { getAuth, GoogleAuthProvider } from "firebase/auth"
+// import { getFirestore, doc, setDoc, serverTimestamp, collection, getDocs, query } from "firebase/firestore"
+// import { query } from "express";
 
-export const apiKey = process.env.apiKey
-export const authDomain = process.env.authDomain
-export const projectId = process.env.projectId
-export const storageBucket = process.env.storageBucket
-export const messagingSenderId = process.env.messagingSenderId
-export const appId = process.env.appId
-export const measurementId = process.env.measurementId
+const firebaseApp = require('firebase/app')
+const initializeApp = firebaseApp
+
+const firestore = require('firebase/firestore')
+const { getFirestore, doc, setDoc, serverTimestamp, collection, getDocs, query, onSnapshot} = firestore
+
+const react = require('react')
+const { useState, useEffect } = react
+
+const {
+    apiKey,
+    authDomain,
+    projectId,
+    storageBucket,
+    messagingSenderId,
+    appId,
+    measurementId
+} = process.env
+
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -34,11 +47,68 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-export const auth = getAuth(app)
-export const provider = new GoogleAuthProvider()
-export const db = getFirestore()
+let app
+let firestoreDB
+
+const initializeFirebaseApp = () => {
+    app = initializeApp(firebaseConfig)
+    firestoreDB = getFirestore()
+}
+
+const uploadProcessedData = async () => {
+    const dataToUpload = {
+        username: fromServer,
+        password: hello,
+        userID: 12,
+        createdAt: serverTimestamp()
+    }
+
+    try{
+        const document = doc(firestoreDB, "users", "from-server")
+        let dataUpdated = await setDoc(document, dataToUpload)
+        return dataUpdated
+    }
+    catch(error){
+        console.log(error)
+    }
+}
+
+const getUsers = async () => {
+    
+    const usersRef = collection(firestoreDB, "users")
+    const data = []
+    const query = query(usersRef)
+
+    const docSnap = await getDocs(query)
+
+    docSnap.forEach((doc) => {
+        data.push(doc.data)
+    })
+
+    return data
+}
+
+const getFirebaseApp = () => app
+
+// module.exports = {
+//     initializeFirebaseApp,
+//     getFirebaseApp,
+//     uploadProcessedData,
+//     getUsers,
+// }
+
+// const app = initializeApp(firebaseConfig);
+// const analytics = getAnalytics(app);
+// export const auth = getAuth(app)
+// export const provider = new GoogleAuthProvider()
+// export const db = getFirestore()
+
+module.exports = {
+    initializeFirebaseApp,
+    uploadProcessedData,
+    getUsers,
+    getFirebaseApp,
+}
 
 // firebase login
 // firebase init
