@@ -3,9 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { useAddBudget } from "../hooks/useAddBudget";
 import { useGetBudgets } from "../hooks/useGetBudgets";
 import { useAddTransaction } from "../hooks/useAddTransaction";
-import { useGetTransactions } from "../hooks/useGetTransaction";
+import { useGetTransactions } from "../hooks/useGetTransactions";
 import { useGetUserInfo } from "../hooks/useGetUserInfo";
-import PieChart from "../components/piechart";
+import ExpensesPie from "../components/expensesPie";
+import IncomePie from "../components/incomePie";
+import NetPie from "../components/netWorthPie";
+import Summary from "../components/summary";
 
 const Dashboard = () => {
 
@@ -13,14 +16,14 @@ const Dashboard = () => {
     const { budgets } = useGetBudgets()
     const { addTransaction } = useAddTransaction()
     const { transactions } = useGetTransactions()
+    const { username, userID } = useGetUserInfo()
     const navigate = useNavigate()
-    const { username } = useGetUserInfo()
 
     const [budgetDescription, setBudgetDescription] = useState("none")
     const [budgetAmount, setBudgetAmount] = useState(0)
     const [transDescription, setTransDescription] = useState("none")
     const [transAmount, setTransAmount] = useState(0)
-    const [transBudget, setTransBudget] = useState('none')
+    const [transBudget, setTransBudget] = useState('none')    
 
     const onSubmitBudgets = async (e) => {
         document.getElementById('budget-description').value = ''
@@ -42,35 +45,11 @@ const Dashboard = () => {
         document.getElementById('trans-description').value = ''
     }
 
-    const signOut = async () => {
-        try{
-            localStorage.clear()
-            navigate("/")
-        }catch(error){
-            console.log(error)
-        }
-    }
-
   return (
     <>
         <div className="expense-tracker">
             <div className="container">
-                <h1>{ username }'s Dashboard</h1>
-                <button className="sign-out-button" onClick={signOut}>Sign Out</button>
-                <div className="balance">
-                    <h3>Your Balance</h3>
-                    <h2>$0.00</h2>
-                </div>
-                <div className="Summary">
-                    <div className="income">
-                        <h4>Income</h4>
-                        <p>$0.00</p>
-                    </div>
-                    <div className="expenses">
-                        <h4>Expenses</h4>
-                        <p>$0.00</p>
-                    </div>
-                </div>
+                <Summary username={username}/>
                 <h2>Add Budget</h2>
                 <form onSubmit={ onSubmitBudgets }>
                     <input 
@@ -84,7 +63,7 @@ const Dashboard = () => {
                         placeholder="Amount" 
                         required 
                         id="budget-amount"
-                        onChange={(e) => setBudgetAmount(e.target.value)} />
+                        onChange={(e) => setBudgetAmount(parseInt(e.target.value))} />
                     
                     <button type="submit">Add Budget</button>
                 </form>
@@ -103,11 +82,13 @@ const Dashboard = () => {
                         placeholder="Amount" 
                         required 
                         id="trans-amount"
-                        onChange={(e) => setTransAmount(e.target.value)} 
+                        onChange={(e) => setTransAmount(parseInt(e.target.value))} 
                         />
-                    <select id="trans-budgets" required onChange={(e)=> setTransBudget(e.target.value)}>
-                        <option value="Income">Income</option>
-                        <option value="No budget">No Budget</option>
+                    <select 
+                        id="trans-budgets" 
+                        required 
+                        onChange={(e)=> setTransBudget(e.target.value)}>
+                        <option value="none" selected disabled hidden>Select an Option</option> 
                         {budgets.map((budget) => {
                             const {description} = budget
                             return(
@@ -132,8 +113,10 @@ const Dashboard = () => {
             </ul>
         </div>
         <div>
-            <h2>Transactions PieChart</h2>
-            <p><PieChart/></p>
+            <h2>Expenses Chart</h2>
+            <ExpensesPie/>
+            <h2>Income Chart</h2>
+            <IncomePie/>
         </div>
     </>
   );

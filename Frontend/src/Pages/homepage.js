@@ -3,12 +3,14 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios"
 import { useAddUser } from "../hooks/useAddUser";
 import { useGetUsers } from "../hooks/useGetUsers";
+import { useAddSignUpBudget } from "../hooks/useAddSignUpBudget";
 
 const Homepage = () => {
 
   const navigate = useNavigate()
   const { addUser } = useAddUser()
   const { users } = useGetUsers()
+  const { addSignUpBudget } = useAddSignUpBudget()
 
   const [signUser, setSignUser] = useState('')
   const [signPass, setSignPass] = useState(0)
@@ -17,12 +19,16 @@ const Homepage = () => {
   const [logPass, setLogPass] = useState(0)
 
   const onSubmitSignUp = async (e) => {
-    e.preventDefault()
     const userID = Math.random()
     addUser({
         username: signUser,
         password: signPass,
         userID: userID
+    })
+    addSignUpBudget({
+      description: "Income",
+      amount: 0,
+      userID: userID
     })
     logIn(signUser,signPass,userID)
   }
@@ -48,7 +54,7 @@ const Homepage = () => {
       userID: userID
     }
 
-    axios.post('http://localhost:5000/api/login',data)
+    await axios.post('http://localhost:5000/api/login',data)
       .then(res => {
         document.getElementById('logUser').value=''
         document.getElementById('logPass').value=''
@@ -61,7 +67,7 @@ const Homepage = () => {
           // may or may not have to refresh token
 
           localStorage.setItem('auth', JSON.stringify(auth))
-          navigate('/dashboard')
+          navigate(`/dashboard/${userID}`)
         }
       })
   }

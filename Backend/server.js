@@ -1,3 +1,17 @@
+var admin = require("firebase-admin");
+
+var serviceAccount = require("./key.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
+const db = admin.firestore()
+
+let usersRef = db.collection('users')
+let budgetsRef = db.collection('budgets')
+let transactionsRef = db.collection('transactions')
+
 const express = require('express')
 const app = express();
 
@@ -23,6 +37,33 @@ const jwtMW = exjwt({
     algorithms: ['HS256']
 });
 
+// new api calls
+app.get('/api/getUsers', async (req, res) => {
+    const users = []
+    await usersRef.get().then((querySnapshot) => {
+        querySnapshot.forEach(document => {
+            users.push(document.data())
+        })
+    })
+    res.json(users)
+})
+
+app.get('/api/getUser', async (req, res) => {
+    const { username, password, userID } = req.body
+    res.json({username: username, userID: userID})
+})
+
+
+app.get('/api/transactions', async (req, res) => {
+    const transactions = []
+    await transactionsRef.get().then((querySnapshot) => {
+        querySnapshot.forEach(document => {
+            transactions.push(document.data())
+        })
+    })
+    res.json(transactions)
+})
+
 app.post('/api/signup', (req, res) => {
     const { username, password, userID } = req.body
 
@@ -47,7 +88,7 @@ app.post('/api/login', (req, res) => {
     const { username, password, userID } = req.body
 
     if (req.body){
-        let token = jwt.sign({id: userID, username: username}, secretKey, { expiresIn: '180000'})
+        let token = jwt.sign({id: userID, username: username}, secretKey, { expiresIn: 60 })
         res.json({
             success: true,
             err: null,
