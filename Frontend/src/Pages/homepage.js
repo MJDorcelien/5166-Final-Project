@@ -25,12 +25,24 @@ const Homepage = () => {
         password: signPass,
         userID: userID
     })
+
     addSignUpBudget({
       description: "Income",
       amount: 0,
       userID: userID
     })
-    logIn(signUser,signPass,userID)
+
+    users.map((user) => {
+      if(user.username === signUser && user.password === signPass){
+        alert("This username and password is already in use. Please choose another username and/or password.")
+        setSignUser('')
+        setSignPass('')
+      }
+    })
+
+    if(signUser !== '' && signPass !== ''){
+      logIn(signUser,signPass,userID)
+    }
   }
 
   const onSubmitLogIn = async (e) => {
@@ -75,31 +87,33 @@ const Homepage = () => {
   return (
     <div className="login-page">
       <div className="signup">
+        <h1>Sign Up:</h1>
           <form onSubmit={ onSubmitSignUp }>
+            <label htmlFor="signUser">Username: </label>
             <input 
-                type="text" 
-                placeholder="Username" 
-                id="signUser"
-                required 
-                onChange={(e) => setSignUser(e.target.value)}
-                />
+              type="text" 
+              placeholder="Username" 
+              id="signUser"
+              required 
+              onChange={(e) => setSignUser(e.target.value)}
+              />
+            <label htmlFor="signPass">Password (must be numbers): </label>
             <input 
-                type="number" 
-                placeholder="Password" 
-                id="signPass"
-                required 
-                onChange={(e) => setSignPass(e.target.value)} 
-                />
-            
+              type="number" 
+              placeholder="Password" 
+              id="signPass"
+              required 
+              onChange={(e) => setSignPass(e.target.value)} 
+              />      
             <button type="submit">Sign-Up</button>
-        </form>
-
-
+          </form>
       </div>
 
       <br />
 
+      <h1>Log In: </h1>
       <form onSubmit={ onSubmitLogIn }>
+        <label htmlFor="logUser">Username: </label>
         <input 
           type="text" 
           placeholder="Username" 
@@ -107,14 +121,14 @@ const Homepage = () => {
           required 
           onChange={(e) => setLogUser(e.target.value)}
           />
+        <label htmlFor="logPass">Password: </label>
         <input 
           type="number" 
           placeholder="Password" 
           id="logPass"
           required 
           onChange={(e) => setLogPass(e.target.value)} 
-          />
-        
+          />        
         <button type="submit">Log-In</button>
       </form>
     </div>

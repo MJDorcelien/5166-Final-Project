@@ -1,10 +1,10 @@
 import React, { useEffect } from "react"
 import { useGetTransactions } from "../hooks/useGetTransactions"
-// import * as d3 from 'd3'
 import * as d3 from 'd3'
 import { useGetBudgets } from "../hooks/useGetBudgets"
 
 const ExpensesPie = () => {
+  
     const { transactions } = useGetTransactions()
     const { budgets } = useGetBudgets()
     const data = []
@@ -32,8 +32,8 @@ const ExpensesPie = () => {
       const height = 2 * outerRadius + margin.top + margin.bottom;
     
       const colorScale = d3     
-        .scaleSequential()      
-        .interpolator(d3.interpolateCool)      
+        .scaleSequential()  // maps the color scale    
+        .interpolator(d3.interpolateWarm)      // the color that's being mapped
         .domain([0, data.length]);
     
       useEffect(() => {
